@@ -443,7 +443,11 @@ def main():
     app.add_error_handler(error_handler)
 
     print("Bot is running...")
-    app.run_polling()
+    app.run_polling(
+    poll_interval=0.2,
+    timeout=10,
+    drop_pending_updates=True
+    )
 
 if __name__ == "__main__":
     main()
