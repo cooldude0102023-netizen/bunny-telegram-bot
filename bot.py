@@ -219,13 +219,22 @@ async def send_clean_message(
 def home_keyboard():
     buttons = []
     row = []
+
+    label_map = {
+        "btech": "🎓 B.Tech",
+        "bpharm": "💊 B.Pharm",
+        "mba": "📊 MBA",
+        "mca": "💻 MCA",
+    }
+
     for course_key, course_data in COURSES.items():
-        row.append(InlineKeyboardButton(course_data["label"], callback_data=f"course|{course_key}"))
+        row.append(InlineKeyboardButton(label_map[course_key], callback_data=f"course|{course_key}"))
         if len(row) == 2:
             buttons.append(row)
             row = []
     if row:
         buttons.append(row)
+
     return InlineKeyboardMarkup(buttons)
 
 def years_keyboard(course_key: str):
