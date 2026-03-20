@@ -193,20 +193,26 @@ async def send_clean_message(
     user_id = update.effective_user.id
     chat_id = update.effective_chat.id
 
+    # If button click → edit same message (NO delete issue)
+    if update.callback_query:
+        try:
+            await update.callback_query.edit_message_text(
+                text=text,
+                reply_markup=reply_markup,
+                parse_mode=parse_mode
+            )
+            return
+        except Exception:
+            pass
+
+    # Normal message → delete old + send new
     await delete_old_bot_message(chat_id, user_id, context)
 
-    if update.callback_query:
-        sent = await update.callback_query.message.reply_text(
-            text=text,
-            reply_markup=reply_markup,
-            parse_mode=parse_mode
-        )
-    else:
-        sent = await update.message.reply_text(
-            text=text,
-            reply_markup=reply_markup,
-            parse_mode=parse_mode
-        )
+    sent = await update.message.reply_text(
+        text=text,
+        reply_markup=reply_markup,
+        parse_mode=parse_mode
+    )
 
     user_last_message[get_user_key(chat_id, user_id)] = sent.message_id
 
