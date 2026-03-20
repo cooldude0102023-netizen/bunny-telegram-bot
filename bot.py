@@ -13,7 +13,6 @@ from telegram.ext import (
 logging.basicConfig(level=logging.INFO)
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-
 SITE = "https://notesgallery.com"
 
 TRIGGER_KEYWORDS = [
@@ -22,26 +21,27 @@ TRIGGER_KEYWORDS = [
     "important question", "important questions", "imp question", "imp questions"
 ]
 
-# Store latest bot message per user+chat so old reply can be deleted
 user_last_message = {}
-
-# -------- DATA CONFIG --------
 
 COURSES = {
     "btech": {
         "label": "B.Tech",
+        "icon": "🎓",
         "years": ["1st Year", "2nd Year", "3rd Year", "4th Year"],
     },
     "bpharm": {
         "label": "B.Pharm",
+        "icon": "💊",
         "years": ["1st Year", "2nd Year", "3rd Year", "4th Year"],
     },
     "mba": {
         "label": "MBA",
+        "icon": "📊",
         "years": ["1st Year", "2nd Year"],
     },
     "mca": {
         "label": "MCA",
+        "icon": "💻",
         "years": ["1st Year", "2nd Year"],
     },
 }
@@ -54,11 +54,11 @@ YEAR_TO_SEMESTERS = {
 }
 
 RESOURCE_TYPES = [
-    "Notes",
-    "PYQs",
-    "Quantum",
-    "Syllabus",
-    "Important Questions",
+    ("📚 Notes", "Notes"),
+    ("📄 PYQs", "PYQs"),
+    ("📘 Quantum", "Quantum"),
+    ("📑 Syllabus", "Syllabus"),
+    ("⭐ Important Questions", "Important Questions"),
 ]
 
 COMING_SOON_TEXT = (
@@ -71,11 +71,10 @@ COMING_SOON_TEXT = (
 AVAILABLE_LINKS = {
     "btech": {
         "1st Year": {
-            "Study Materials": f"{SITE}/aktu-b-tech-1st-year-free-study-materials/",
-            "Syllabus": f"{SITE}/latest-aktu-syllabus/",
             "Notes": f"{SITE}/aktu-b-tech-1st-year-free-study-materials/",
             "PYQs": f"{SITE}/aktu-pyqs/",
             "Quantum": f"{SITE}/quantums/",
+            "Syllabus": f"{SITE}/latest-aktu-syllabus/",
         },
         "2nd Year": {
             "3rd Semester": {
@@ -170,10 +169,9 @@ AVAILABLE_LINKS = {
 }
 
 
-# -------- HELPERS --------
-
 def get_user_key(chat_id: int, user_id: int) -> str:
     return f"{chat_id}_{user_id}"
+
 
 async def delete_old_bot_message(chat_id: int, user_id: int, context: ContextTypes.DEFAULT_TYPE):
     key = get_user_key(chat_id, user_id)
@@ -182,6 +180,7 @@ async def delete_old_bot_message(chat_id: int, user_id: int, context: ContextTyp
             await context.bot.delete_message(chat_id=chat_id, message_id=user_last_message[key])
         except Exception:
             pass
+
 
 async def send_clean_message(
     update: Update,
@@ -193,7 +192,7 @@ async def send_clean_message(
     user_id = update.effective_user.id
     chat_id = update.effective_chat.id
 
-    # If button click → edit same message (NO delete issue)
+    # Button click -> edit same message
     if update.callback_query:
         try:
             await update.callback_query.edit_message_text(
@@ -205,7 +204,7 @@ async def send_clean_message(
         except Exception:
             pass
 
-    # Normal message → delete old + send new
+    # Normal user message -> delete old bot message and send new
     await delete_old_bot_message(chat_id, user_id, context)
 
     sent = await update.message.reply_text(
@@ -215,6 +214,7 @@ async def send_clean_message(
     )
 
     user_last_message[get_user_key(chat_id, user_id)] = sent.message_id
+
 
 def home_keyboard():
     buttons = []
@@ -227,7 +227,7 @@ def home_keyboard():
         "mca": "💻 MCA",
     }
 
-    for course_key, course_data in COURSES.items():
+    for course_key in COURSES.keys():
         row.append(InlineKeyboardButton(label_map[course_key], callback_data=f"course|{course_key}"))
         if len(row) == 2:
             buttons.append(row)
@@ -237,25 +237,28 @@ def home_keyboard():
 
     return InlineKeyboardMarkup(buttons)
 
+
 def years_keyboard(course_key: str):
     years = COURSES[course_key]["years"]
-    buttons = [[InlineKeyboardButton(year, callback_data=f"year|{course_key}|{year}")] for year in years]
+    buttons = [[InlineKeyboardButton(f"📅 {year}", callback_data=f"year|{course_key}|{year}")] for year in years]
     buttons.append([InlineKeyboardButton("🏠 Home", callback_data="home")])
     return InlineKeyboardMarkup(buttons)
 
+
 def semesters_keyboard(course_key: str, year: str):
     semesters = YEAR_TO_SEMESTERS.get(year, [])
-    buttons = [[InlineKeyboardButton(sem, callback_data=f"sem|{course_key}|{year}|{sem}")] for sem in semesters]
+    buttons = [[InlineKeyboardButton(f"📘 {sem}", callback_data=f"sem|{course_key}|{year}|{sem}")] for sem in semesters]
     buttons.append([
         InlineKeyboardButton("🔙 Back", callback_data=f"course|{course_key}"),
         InlineKeyboardButton("🏠 Home", callback_data="home")
     ])
     return InlineKeyboardMarkup(buttons)
 
+
 def resources_keyboard_for_year(course_key: str, year: str):
     buttons = [
-        [InlineKeyboardButton(r, callback_data=f"res_year|{course_key}|{year}|{r}")]
-        for r in RESOURCE_TYPES
+        [InlineKeyboardButton(display_text, callback_data=f"res_year|{course_key}|{year}|{real_value}")]
+        for display_text, real_value in RESOURCE_TYPES
     ]
     buttons.append([
         InlineKeyboardButton("🔙 Back", callback_data=f"course|{course_key}"),
@@ -263,16 +266,18 @@ def resources_keyboard_for_year(course_key: str, year: str):
     ])
     return InlineKeyboardMarkup(buttons)
 
+
 def resources_keyboard_for_sem(course_key: str, year: str, sem: str):
     buttons = [
-        [InlineKeyboardButton(r, callback_data=f"res_sem|{course_key}|{year}|{sem}|{r}")]
-        for r in RESOURCE_TYPES
+        [InlineKeyboardButton(display_text, callback_data=f"res_sem|{course_key}|{year}|{sem}|{real_value}")]
+        for display_text, real_value in RESOURCE_TYPES
     ]
     buttons.append([
         InlineKeyboardButton("🔙 Back", callback_data=f"year|{course_key}|{year}"),
         InlineKeyboardButton("🏠 Home", callback_data="home")
     ])
     return InlineKeyboardMarkup(buttons)
+
 
 def resolve_year_resource(course_key: str, year: str, resource_type: str):
     course_data = AVAILABLE_LINKS.get(course_key, {})
@@ -281,25 +286,34 @@ def resolve_year_resource(course_key: str, year: str, resource_type: str):
         return year_data[resource_type]
     return None
 
+
 def resolve_sem_resource(course_key: str, year: str, sem: str, resource_type: str):
     course_data = AVAILABLE_LINKS.get(course_key, {})
     year_data = course_data.get(year, {})
     sem_data = year_data.get(sem, {}) if isinstance(year_data, dict) else {}
     return sem_data.get(resource_type)
 
+
 def format_result_text(course_key: str, year: str, sem: str | None, resource_type: str, link: str):
     course_label = COURSES[course_key]["label"]
+    course_icon = COURSES[course_key]["icon"]
+
     if sem:
         return (
-            f"📚 {course_label} - {year} - {sem}\n"
+            f"{course_icon} {course_label}\n"
+            f"📅 {year}\n"
+            f"📘 {sem}\n"
             f"📌 Resource: {resource_type}\n\n"
             f"🔗 Open here:\n{link}"
         )
+
     return (
-        f"📚 {course_label} - {year}\n"
+        f"{course_icon} {course_label}\n"
+        f"📅 {year}\n"
         f"📌 Resource: {resource_type}\n\n"
         f"🔗 Open here:\n{link}"
     )
+
 
 def result_keyboard(course_key: str, year: str, sem: str | None):
     if sem:
@@ -313,8 +327,6 @@ def result_keyboard(course_key: str, year: str, sem: str | None):
     ])
 
 
-# -------- HANDLERS --------
-
 async def start_flow(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "🎓 Welcome to Notes Gallery Bot\n\n"
@@ -322,11 +334,14 @@ async def start_flow(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     await send_clean_message(update, context, text, reply_markup=home_keyboard())
 
+
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await start_flow(update, context)
 
+
 async def resources_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await start_flow(update, context)
+
 
 async def text_trigger_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message or not update.message.text:
@@ -336,11 +351,14 @@ async def text_trigger_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     if any(keyword in text for keyword in TRIGGER_KEYWORDS):
         await start_flow(update, context)
 
+
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
     data = query.data
+    parts = data.split("|")
+    action = parts[0]
 
     if data == "home":
         await send_clean_message(
@@ -351,29 +369,28 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    parts = data.split("|")
-    action = parts[0]
-
     if action == "course":
         course_key = parts[1]
         course_label = COURSES[course_key]["label"]
+        course_icon = COURSES[course_key]["icon"]
         await send_clean_message(
             update,
             context,
-            f"📘 {course_label}\n\nChoose your year of study:",
+            f"{course_icon} {course_label}\n\nChoose your year of study:",
             reply_markup=years_keyboard(course_key)
         )
         return
 
     if action == "year":
         course_key, year = parts[1], parts[2]
+        course_label = COURSES[course_key]["label"]
+        course_icon = COURSES[course_key]["icon"]
 
-        # Special rule: B.Tech 1st Year -> no semester
         if course_key == "btech" and year == "1st Year":
             await send_clean_message(
                 update,
                 context,
-                f"📘 B.Tech\n📅 {year}\n\nChoose resource type:",
+                f"{course_icon} {course_label}\n📅 {year}\n\nChoose resource type:",
                 reply_markup=resources_keyboard_for_year(course_key, year)
             )
             return
@@ -381,17 +398,20 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await send_clean_message(
             update,
             context,
-            f"📅 {year}\n\nChoose semester:",
+            f"{course_icon} {course_label}\n📅 {year}\n\nChoose semester:",
             reply_markup=semesters_keyboard(course_key, year)
         )
         return
 
     if action == "sem":
         course_key, year, sem = parts[1], parts[2], parts[3]
+        course_label = COURSES[course_key]["label"]
+        course_icon = COURSES[course_key]["icon"]
+
         await send_clean_message(
             update,
             context,
-            f"📅 {year}\n🎯 {sem}\n\nChoose resource type:",
+            f"{course_icon} {course_label}\n📅 {year}\n📘 {sem}\n\nChoose resource type:",
             reply_markup=resources_keyboard_for_sem(course_key, year, sem)
         )
         return
@@ -436,8 +456,10 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         return
 
+
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
     logging.error("Exception while handling update:", exc_info=context.error)
+
 
 def main():
     if not BOT_TOKEN:
@@ -453,10 +475,11 @@ def main():
 
     print("Bot is running...")
     app.run_polling(
-    poll_interval=0.2,
-    timeout=10,
-    drop_pending_updates=True
+        poll_interval=0.5,
+        timeout=10,
+        drop_pending_updates=True
     )
+
 
 if __name__ == "__main__":
     main()
