@@ -1,5 +1,7 @@
 import os
 import logging
+import threading
+from flask import Flask
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder,
@@ -67,7 +69,6 @@ COMING_SOON_TEXT = (
     "Stay connected with Notes Gallery 💙"
 )
 
-# Available links only. Everything else will show Coming Soon.
 AVAILABLE_LINKS = {
     "btech": {
         "1st Year": {
@@ -168,10 +169,25 @@ AVAILABLE_LINKS = {
     },
 }
 
+# ---------------- FLASK WEB SERVER ----------------
+web_app = Flask(__name__)
+
+@web_app.route("/")
+def home():
+    return "Bunny bot is alive!"
+
+@web_app.route("/health")
+def health():
+    return {"status": "ok", "service": "bunny-bot"}
+
+def run_web_server():
+    port = int(os.environ.get("PORT", 10000))
+    web_app.run(host="0.0.0.0", port=port)
+
+# ---------------- TELEGRAM BOT HELPERS ----------------
 
 def get_user_key(chat_id: int, user_id: int) -> str:
     return f"{chat_id}_{user_id}"
-
 
 async def delete_old_bot_message(chat_id: int, user_id: int, context: ContextTypes.DEFAULT_TYPE):
     key = get_user_key(chat_id, user_id)
@@ -180,7 +196,6 @@ async def delete_old_bot_message(chat_id: int, user_id: int, context: ContextTyp
             await context.bot.delete_message(chat_id=chat_id, message_id=user_last_message[key])
         except Exception:
             pass
-
 
 async def send_clean_message(
     update: Update,
@@ -192,7 +207,6 @@ async def send_clean_message(
     user_id = update.effective_user.id
     chat_id = update.effective_chat.id
 
-    # Button click -> edit same message
     if update.callback_query:
         try:
             await update.callback_query.edit_message_text(
@@ -204,7 +218,6 @@ async def send_clean_message(
         except Exception:
             pass
 
-    # Normal user message -> delete old bot message and send new
     await delete_old_bot_message(chat_id, user_id, context)
 
     sent = await update.message.reply_text(
@@ -214,7 +227,6 @@ async def send_clean_message(
     )
 
     user_last_message[get_user_key(chat_id, user_id)] = sent.message_id
-
 
 def home_keyboard():
     buttons = []
@@ -237,13 +249,11 @@ def home_keyboard():
 
     return InlineKeyboardMarkup(buttons)
 
-
 def years_keyboard(course_key: str):
     years = COURSES[course_key]["years"]
-    buttons = [[InlineKeyboardButton(f"📅 {year}", callback_data=f"year|{course_key}|{year}")] for year in years]
+    buttons = [[InlineKeyboardButton(f"🔹 {year}", callback_data=f"year|{course_key}|{year}")] for year in years]
     buttons.append([InlineKeyboardButton("🏠 Home", callback_data="home")])
     return InlineKeyboardMarkup(buttons)
-
 
 def semesters_keyboard(course_key: str, year: str):
     semesters = YEAR_TO_SEMESTERS.get(year, [])
@@ -253,7 +263,6 @@ def semesters_keyboard(course_key: str, year: str):
         InlineKeyboardButton("🏠 Home", callback_data="home")
     ])
     return InlineKeyboardMarkup(buttons)
-
 
 def resources_keyboard_for_year(course_key: str, year: str):
     buttons = [
@@ -266,7 +275,6 @@ def resources_keyboard_for_year(course_key: str, year: str):
     ])
     return InlineKeyboardMarkup(buttons)
 
-
 def resources_keyboard_for_sem(course_key: str, year: str, sem: str):
     buttons = [
         [InlineKeyboardButton(display_text, callback_data=f"res_sem|{course_key}|{year}|{sem}|{real_value}")]
@@ -278,7 +286,6 @@ def resources_keyboard_for_sem(course_key: str, year: str, sem: str):
     ])
     return InlineKeyboardMarkup(buttons)
 
-
 def resolve_year_resource(course_key: str, year: str, resource_type: str):
     course_data = AVAILABLE_LINKS.get(course_key, {})
     year_data = course_data.get(year, {})
@@ -286,13 +293,11 @@ def resolve_year_resource(course_key: str, year: str, resource_type: str):
         return year_data[resource_type]
     return None
 
-
 def resolve_sem_resource(course_key: str, year: str, sem: str, resource_type: str):
     course_data = AVAILABLE_LINKS.get(course_key, {})
     year_data = course_data.get(year, {})
     sem_data = year_data.get(sem, {}) if isinstance(year_data, dict) else {}
     return sem_data.get(resource_type)
-
 
 def format_result_text(course_key: str, year: str, sem: str | None, resource_type: str, link: str):
     course_label = COURSES[course_key]["label"]
@@ -301,7 +306,7 @@ def format_result_text(course_key: str, year: str, sem: str | None, resource_typ
     if sem:
         return (
             f"{course_icon} {course_label}\n"
-            f"📅 {year}\n"
+            f"🔹 {year}\n"
             f"📘 {sem}\n"
             f"📌 Resource: {resource_type}\n\n"
             f"🔗 Open here:\n{link}"
@@ -309,11 +314,10 @@ def format_result_text(course_key: str, year: str, sem: str | None, resource_typ
 
     return (
         f"{course_icon} {course_label}\n"
-        f"📅 {year}\n"
+        f"🔹 {year}\n"
         f"📌 Resource: {resource_type}\n\n"
         f"🔗 Open here:\n{link}"
     )
-
 
 def result_keyboard(course_key: str, year: str, sem: str | None):
     if sem:
@@ -326,6 +330,7 @@ def result_keyboard(course_key: str, year: str, sem: str | None):
         [InlineKeyboardButton("🏠 Home", callback_data="home")]
     ])
 
+# ---------------- TELEGRAM HANDLERS ----------------
 
 async def start_flow(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
@@ -334,14 +339,11 @@ async def start_flow(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     await send_clean_message(update, context, text, reply_markup=home_keyboard())
 
-
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await start_flow(update, context)
 
-
 async def resources_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await start_flow(update, context)
-
 
 async def text_trigger_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message or not update.message.text:
@@ -350,7 +352,6 @@ async def text_trigger_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     text = update.message.text.lower().strip()
     if any(keyword in text for keyword in TRIGGER_KEYWORDS):
         await start_flow(update, context)
-
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -390,7 +391,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await send_clean_message(
                 update,
                 context,
-                f"{course_icon} {course_label}\n📅 {year}\n\nChoose resource type:",
+                f"{course_icon} {course_label}\n🔹 {year}\n\nChoose resource type:",
                 reply_markup=resources_keyboard_for_year(course_key, year)
             )
             return
@@ -398,7 +399,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await send_clean_message(
             update,
             context,
-            f"{course_icon} {course_label}\n📅 {year}\n\nChoose semester:",
+            f"{course_icon} {course_label}\n🔹 {year}\n\nChoose semester:",
             reply_markup=semesters_keyboard(course_key, year)
         )
         return
@@ -411,7 +412,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await send_clean_message(
             update,
             context,
-            f"{course_icon} {course_label}\n📅 {year}\n📘 {sem}\n\nChoose resource type:",
+            f"{course_icon} {course_label}\n🔹 {year}\n📘 {sem}\n\nChoose resource type:",
             reply_markup=resources_keyboard_for_sem(course_key, year, sem)
         )
         return
@@ -456,30 +457,30 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         return
 
-
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
     logging.error("Exception while handling update:", exc_info=context.error)
-
 
 def main():
     if not BOT_TOKEN:
         raise ValueError("BOT_TOKEN not found in environment variables.")
 
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
+    # Start tiny web server in separate thread
+    threading.Thread(target=run_web_server, daemon=True).start()
 
+    # Start telegram bot
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start_command))
     app.add_handler(CommandHandler("resources", resources_command))
     app.add_handler(CallbackQueryHandler(button_handler))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text_trigger_handler))
     app.add_error_handler(error_handler)
 
-    print("Bot is running...")
+    print("Bot + Web server is running...")
     app.run_polling(
         poll_interval=0.5,
         timeout=10,
         drop_pending_updates=True
     )
-
 
 if __name__ == "__main__":
     main()
