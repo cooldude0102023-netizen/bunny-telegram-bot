@@ -15,7 +15,6 @@ from telegram.ext import (
 logging.basicConfig(level=logging.INFO)
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-SITE = "https://notesgallery.com"
 
 NEWS_URL = "https://notesgallery.com/latest-aktu-news-and-updates/"
 INTERNSHIPS_URL = "https://notesgallery.com/jobs-internships-for-college-students/"
@@ -50,21 +49,20 @@ def run_web_server():
     port = int(os.environ.get("PORT", 10000))
     web_app.run(host="0.0.0.0", port=port)
 
-
 # --------------------------------------------------
 # BOT UI CONFIG
 # --------------------------------------------------
 COURSES = {
-    "btech": {"label": "B.Tech", "icon": "🎓"},
+    "btech": {"label": "B.Tech", "icon": "💻"},
     "bpharm": {"label": "B.Pharm", "icon": "💊"},
     "mba": {"label": "MBA", "icon": "📊"},
-    "mca": {"label": "MCA", "icon": "💻"},
+    "mca": {"label": "MCA", "icon": "🖥"},
 }
 
 RESOURCE_TYPES = [
     ("📚 Notes", "Notes"),
     ("📄 PYQs", "PYQs"),
-    ("📘 Quantum", "Quantum"),
+    ("⚡ Quantum", "Quantum"),
     ("📑 Syllabus", "Syllabus"),
     ("⭐ Important Questions", "Important Questions"),
 ]
@@ -81,49 +79,48 @@ YEAR_TO_SEMESTERS = {
     "4th Year": ["7th Semester", "8th Semester"],
 }
 
-# B.Tech branches by year+semester
 BTECH_BRANCHES = {
     "2nd Year": {
         "3rd Semester": [
-            ("CSE", "cse"),
-            ("IT", "it"),
-            ("ECE", "ece"),
-            ("EEE/EN", "eee"),
-            ("Civil", "civil"),
-            ("Mechanical", "mech"),
-            ("Open Elective", "oe"),
+            ("💻 CSE", "cse"),
+            ("🌐 IT", "it"),
+            ("📡 ECE", "ece"),
+            ("⚡ EEE/EN", "eee"),
+            ("🏗 Civil", "civil"),
+            ("⚙ Mechanical", "mech"),
+            ("🧩 Open Elective", "oe"),
         ],
         "4th Semester": [
-            ("CSE", "cse"),
-            ("IT", "it"),
-            ("ECE", "ece"),
-            ("EEE/EN", "eee"),
-            ("Civil", "civil"),
-            ("Mechanical", "mech"),
-            ("Open Elective", "oe"),
+            ("💻 CSE", "cse"),
+            ("🌐 IT", "it"),
+            ("📡 ECE", "ece"),
+            ("⚡ EEE/EN", "eee"),
+            ("🏗 Civil", "civil"),
+            ("⚙ Mechanical", "mech"),
+            ("🧩 Open Elective", "oe"),
         ],
     },
     "3rd Year": {
         "5th Semester": [
-            ("CSE", "cse"),
-            ("AI/ML", "aiml"),
-            ("CSE(DS)", "cseds"),
-            ("IT", "it"),
-            ("ECE", "ece"),
-            ("EEE/EE", "eee"),
-            ("Civil", "civil"),
-            ("Mechanical", "mech"),
-            ("Open Elective", "oe"),
+            ("💻 CSE", "cse"),
+            ("🤖 AI/ML", "aiml"),
+            ("🧠 CSE(DS)", "cseds"),
+            ("🌐 IT", "it"),
+            ("📡 ECE", "ece"),
+            ("⚡ EEE/EE", "eee"),
+            ("🏗 Civil", "civil"),
+            ("⚙ Mechanical", "mech"),
+            ("🧩 Open Elective", "oe"),
         ],
         "6th Semester": [
-            ("CSE", "cse"),
-            ("AI/ML", "aiml"),
-            ("CSE(DS)", "cseds"),
-            ("IT", "it"),
-            ("ECE", "ece"),
-            ("EEE/EE", "eee"),
-            ("Civil", "civil"),
-            ("Mechanical", "mech"),
+            ("💻 CSE", "cse"),
+            ("🤖 AI/ML", "aiml"),
+            ("🧠 CSE(DS)", "cseds"),
+            ("🌐 IT", "it"),
+            ("📡 ECE", "ece"),
+            ("⚡ EEE/EE", "eee"),
+            ("🏗 Civil", "civil"),
+            ("⚙ Mechanical", "mech"),
         ],
     },
 }
@@ -132,7 +129,6 @@ BTECH_BRANCHES = {
 # LINK DATA
 # --------------------------------------------------
 
-# B.Tech 1st year -> direct resource
 BTECH_FIRST_YEAR = {
     "Notes": "https://notesgallery.com/aktu-notes/aktu-1st-year-notes-2/",
     "PYQs": "https://notesgallery.com/aktu-pyqs/1st-year-pyqs/",
@@ -141,7 +137,6 @@ BTECH_FIRST_YEAR = {
     "Important Questions": COMING_SOON,
 }
 
-# B.Tech 2nd/3rd year -> semester -> branch -> resource
 BTECH_BRANCH_LINKS = {
     "2nd Year": {
         "3rd Semester": {
@@ -374,7 +369,6 @@ BTECH_BRANCH_LINKS = {
     },
 }
 
-# B.Tech 4th year -> semester -> resource (no branch for now)
 BTECH_FOURTH_YEAR = {
     "7th Semester": {
         "Notes": COMING_SOON,
@@ -392,18 +386,17 @@ BTECH_FOURTH_YEAR = {
     },
 }
 
-# B.Pharm -> year -> semester -> resource
 BPHARM_LINKS = {
     "1st Year": {
         "1st Semester": {
-            "Notes": "https://notesgallery.com/aktu-bpharm-1st-semester-study-materials/",
+            "Notes": "https://notesgallery.com/aktu-b-pharm-1st-semester-notes/",
             "PYQs": COMING_SOON,
             "Quantum": COMING_SOON,
             "Syllabus": COMING_SOON,
             "Important Questions": COMING_SOON,
         },
         "2nd Semester": {
-            "Notes": "https://notesgallery.com/aktu-bpharm-2nd-semester-study-materials/",
+            "Notes": "https://notesgallery.com/aktu-bpharm-2nd-semester-notes/",
             "PYQs": COMING_SOON,
             "Quantum": COMING_SOON,
             "Syllabus": COMING_SOON,
@@ -412,14 +405,14 @@ BPHARM_LINKS = {
     },
     "2nd Year": {
         "3rd Semester": {
-            "Notes": "https://notesgallery.com/aktu-b-pharm-2nd-year-study-materials/b-pharm-3rd-semester-study-materials/",
+            "Notes": "https://notesgallery.com/aktu-bpharm-3rd-semester-notes/",
             "PYQs": COMING_SOON,
             "Quantum": COMING_SOON,
             "Syllabus": COMING_SOON,
             "Important Questions": COMING_SOON,
         },
         "4th Semester": {
-            "Notes": "https://notesgallery.com/aktu-b-pharm-2nd-year-study-materials/aktu-bpharm-4th-semester-study-materials/",
+            "Notes": "https://notesgallery.com/aktu-bpharm-4th-semester-notes/",
             "PYQs": COMING_SOON,
             "Quantum": COMING_SOON,
             "Syllabus": COMING_SOON,
@@ -428,14 +421,14 @@ BPHARM_LINKS = {
     },
     "3rd Year": {
         "5th Semester": {
-            "Notes": COMING_SOON,
+            "Notes": "https://notesgallery.com/aktu-bpharm-5th-semester-notes/",
             "PYQs": COMING_SOON,
             "Quantum": COMING_SOON,
             "Syllabus": COMING_SOON,
             "Important Questions": COMING_SOON,
         },
         "6th Semester": {
-            "Notes": COMING_SOON,
+            "Notes": "https://notesgallery.com/aktu-bpharm-6th-semester-notes/",
             "PYQs": COMING_SOON,
             "Quantum": COMING_SOON,
             "Syllabus": COMING_SOON,
@@ -444,14 +437,14 @@ BPHARM_LINKS = {
     },
     "4th Year": {
         "7th Semester": {
-            "Notes": COMING_SOON,
+            "Notes": "https://notesgallery.com/aktu-bpharm-7th-semester-notes/",
             "PYQs": COMING_SOON,
             "Quantum": COMING_SOON,
             "Syllabus": COMING_SOON,
             "Important Questions": COMING_SOON,
         },
         "8th Semester": {
-            "Notes": COMING_SOON,
+            "Notes": "https://notesgallery.com/aktu-bpharm-8th-semester-notes/",
             "PYQs": COMING_SOON,
             "Quantum": COMING_SOON,
             "Syllabus": COMING_SOON,
@@ -460,7 +453,6 @@ BPHARM_LINKS = {
     },
 }
 
-# MBA -> year -> semester -> resource
 MBA_LINKS = {
     "1st Year": {
         "1st Semester": {
@@ -496,7 +488,6 @@ MBA_LINKS = {
     },
 }
 
-# MCA -> year -> resource
 MCA_LINKS = {
     "1st Year": {
         "Notes": "https://notesgallery.com/1st-year-notes-aktu-mca-free-pdf/",
@@ -537,12 +528,7 @@ async def delete_old_bot_message(chat_id: int, user_id: int, context: ContextTyp
         except Exception:
             pass
 
-async def send_clean_message(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE,
-    text: str,
-    reply_markup=None,
-):
+async def send_clean_message(update: Update, context: ContextTypes.DEFAULT_TYPE, text: str, reply_markup=None):
     user_id = update.effective_user.id
     chat_id = update.effective_chat.id
 
@@ -568,7 +554,7 @@ async def send_clean_message(
     user_last_message[get_user_key(chat_id, user_id)] = sent.message_id
 
 # --------------------------------------------------
-# KEYBOARD HELPERS
+# KEYBOARDS
 # --------------------------------------------------
 def with_footer(rows, back_cb=None, home=True):
     footer = []
@@ -590,14 +576,10 @@ def with_footer(rows, back_cb=None, home=True):
 
 def home_keyboard():
     rows = [
-        [
-            InlineKeyboardButton("🎓 B.Tech", callback_data="course|btech"),
-            InlineKeyboardButton("💊 B.Pharm", callback_data="course|bpharm"),
-        ],
-        [
-            InlineKeyboardButton("📊 MBA", callback_data="course|mba"),
-            InlineKeyboardButton("💻 MCA", callback_data="course|mca"),
-        ],
+        [InlineKeyboardButton("💻 B.Tech", callback_data="course|btech"),
+         InlineKeyboardButton("💊 B.Pharm", callback_data="course|bpharm")],
+        [InlineKeyboardButton("📊 MBA", callback_data="course|mba"),
+         InlineKeyboardButton("🖥 MCA", callback_data="course|mca")],
     ]
     return with_footer(rows, back_cb=None, home=False)
 
@@ -611,7 +593,17 @@ def year_keyboard(course_key: str):
     else:
         years = MCA_YEAR_OPTIONS
 
-    rows = [[InlineKeyboardButton(f"🔹 {year}", callback_data=f"year|{course_key}|{year}")] for year in years]
+    icon_map = {
+        "1st Year": "🟢",
+        "2nd Year": "🔵",
+        "3rd Year": "🟠",
+        "4th Year": "🔴",
+    }
+
+    rows = [
+        [InlineKeyboardButton(f"{icon_map.get(year, '🔹')} {year}", callback_data=f"year|{course_key}|{year}")]
+        for year in years
+    ]
     return with_footer(rows, back_cb=None, home=True)
 
 def semester_keyboard(course_key: str, year: str):
@@ -622,28 +614,22 @@ def semester_keyboard(course_key: str, year: str):
 def branch_keyboard(year: str, sem: str):
     branches = BTECH_BRANCHES[year][sem]
     rows = [[InlineKeyboardButton(label, callback_data=f"branch|{year}|{sem}|{key}")] for label, key in branches]
-    return with_footer(rows, back_cb=f"year|btech|{year}" if year == "1st Year" else f"sem|btech|{year}|{sem}", home=True)
+    return with_footer(rows, back_cb=f"sem|btech|{year}|{sem}", home=True)
 
 def resource_keyboard_for_year(course_key: str, year: str):
-    rows = [
-        [InlineKeyboardButton(display, callback_data=f"res_year|{course_key}|{year}|{real}")]
-        for display, real in RESOURCE_TYPES
-    ]
+    rows = [[InlineKeyboardButton(display, callback_data=f"res_year|{course_key}|{year}|{real}")]
+            for display, real in RESOURCE_TYPES]
     return with_footer(rows, back_cb=f"course|{course_key}", home=True)
 
 def resource_keyboard_for_sem(course_key: str, year: str, sem: str):
-    rows = [
-        [InlineKeyboardButton(display, callback_data=f"res_sem|{course_key}|{year}|{sem}|{real}")]
-        for display, real in RESOURCE_TYPES
-    ]
+    rows = [[InlineKeyboardButton(display, callback_data=f"res_sem|{course_key}|{year}|{sem}|{real}")]
+            for display, real in RESOURCE_TYPES]
     return with_footer(rows, back_cb=f"year|{course_key}|{year}", home=True)
 
 def resource_keyboard_for_branch(year: str, sem: str, branch: str):
-    rows = [
-        [InlineKeyboardButton(display, callback_data=f"res_branch|{year}|{sem}|{branch}|{real}")]
-        for display, real in RESOURCE_TYPES
-    ]
-    return with_footer(rows, back_cb=f"sem|btech|{year}|{sem}", home=True)
+    rows = [[InlineKeyboardButton(display, callback_data=f"res_branch|{year}|{sem}|{branch}|{real}")]
+            for display, real in RESOURCE_TYPES]
+    return with_footer(rows, back_cb=f"branchback|{year}|{sem}", home=True)
 
 def result_keyboard(back_cb: str):
     rows = [[InlineKeyboardButton("🔙 Back", callback_data=back_cb)]]
@@ -651,13 +637,13 @@ def result_keyboard(back_cb: str):
 
 def result_with_link_keyboard(link: str, back_cb: str):
     rows = [
-        [InlineKeyboardButton("🔗 Open Link", url=link)],
+        [InlineKeyboardButton("🚀 Open Link", url=link)],
         [InlineKeyboardButton("🔙 Back", callback_data=back_cb)],
     ]
     return with_footer(rows, back_cb=None, home=True)
 
 # --------------------------------------------------
-# LINK RESOLVERS
+# RESOLVERS
 # --------------------------------------------------
 def get_btech_year_resource(year: str, resource_type: str):
     if year == "1st Year":
@@ -695,7 +681,7 @@ def branch_label_from_key(year: str, sem: str, branch_key: str):
 # HANDLERS
 # --------------------------------------------------
 async def start_flow(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = "🎓 Welcome to Notes Gallery Bot\n\nChoose your course to continue:"
+    text = "🎬 Welcome to Notes Gallery Bot\n\nChoose your course to continue:"
     await send_clean_message(update, context, text, reply_markup=home_keyboard())
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -715,16 +701,10 @@ async def text_trigger_handler(update: Update, context: ContextTypes.DEFAULT_TYP
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-
     data = query.data
 
     if data == "home":
-        await send_clean_message(
-            update,
-            context,
-            "🎓 Choose your course to continue:",
-            reply_markup=home_keyboard()
-        )
+        await send_clean_message(update, context, "🎬 Choose your course to continue:", reply_markup=home_keyboard())
         return
 
     parts = data.split("|")
@@ -733,7 +713,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if action == "course":
         course_key = parts[1]
         course = COURSES[course_key]
-        text = f"{course['icon']} {course['label']}\n\nChoose your year of study:"
+        text = f"{course['icon']} {course['label']}\n\n🎯 Choose your year of study:"
         await send_clean_message(update, context, text, reply_markup=year_keyboard(course_key))
         return
 
@@ -741,43 +721,48 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         course_key, year = parts[1], parts[2]
         course = COURSES[course_key]
 
-        # B.Tech 1st Year -> direct resource
         if course_key == "btech" and year == "1st Year":
-            text = f"{course['icon']} {course['label']}\n🔹 {year}\n\nChoose resource type:"
+            text = f"{course['icon']} {course['label']}\n🟢 {year}\n\n🔥 Choose resource type:"
             await send_clean_message(update, context, text, reply_markup=resource_keyboard_for_year(course_key, year))
             return
 
-        # MCA -> direct resource
         if course_key == "mca":
-            text = f"{course['icon']} {course['label']}\n🔹 {year}\n\nChoose resource type:"
+            year_icon = {"1st Year": "🟢", "2nd Year": "🔵", "3rd Year": "🟠"}.get(year, "🔹")
+            text = f"{course['icon']} {course['label']}\n{year_icon} {year}\n\n🔥 Choose resource type:"
             await send_clean_message(update, context, text, reply_markup=resource_keyboard_for_year(course_key, year))
             return
 
-        # Others -> semester
-        text = f"{course['icon']} {course['label']}\n🔹 {year}\n\nChoose semester:"
+        year_icon = {"1st Year": "🟢", "2nd Year": "🔵", "3rd Year": "🟠", "4th Year": "🔴"}.get(year, "🔹")
+        text = f"{course['icon']} {course['label']}\n{year_icon} {year}\n\n📘 Choose semester:"
         await send_clean_message(update, context, text, reply_markup=semester_keyboard(course_key, year))
         return
 
     if action == "sem":
         course_key, year, sem = parts[1], parts[2], parts[3]
         course = COURSES[course_key]
+        year_icon = {"1st Year": "🟢", "2nd Year": "🔵", "3rd Year": "🟠", "4th Year": "🔴"}.get(year, "🔹")
 
-        # B.Tech 2nd/3rd year -> branch
         if course_key == "btech" and year in ["2nd Year", "3rd Year"]:
-            text = f"{course['icon']} {course['label']}\n🔹 {year}\n📘 {sem}\n\nChoose branch:"
+            text = f"{course['icon']} {course['label']}\n{year_icon} {year}\n📘 {sem}\n\n🎯 Choose branch:"
             await send_clean_message(update, context, text, reply_markup=branch_keyboard(year, sem))
             return
 
-        # B.Tech 4th year -> resource
-        text = f"{course['icon']} {course['label']}\n🔹 {year}\n📘 {sem}\n\nChoose resource type:"
+        text = f"{course['icon']} {course['label']}\n{year_icon} {year}\n📘 {sem}\n\n🔥 Choose resource type:"
         await send_clean_message(update, context, text, reply_markup=resource_keyboard_for_sem(course_key, year, sem))
         return
 
     if action == "branch":
         year, sem, branch = parts[1], parts[2], parts[3]
         branch_label = branch_label_from_key(year, sem, branch)
-        text = f"🎓 B.Tech\n🔹 {year}\n📘 {sem}\n🏷️ {branch_label}\n\nChoose resource type:"
+        year_icon = {"2nd Year": "🔵", "3rd Year": "🟠"}.get(year, "🔹")
+        text = f"💻 B.Tech\n{year_icon} {year}\n📘 {sem}\n🏷️ {branch_label}\n\n🔥 Choose resource type:"
         await send_clean_message(update, context, text, reply_markup=resource_keyboard_for_branch(year, sem, branch))
+        return
+
+    if action == "branchback":
+        year, sem = parts[1], parts[2]
+        text = f"💻 B.Tech\n📘 {sem}\n\n🎯 Choose branch:"
+        await send_clean_message(update, context, text, reply_markup=branch_keyboard(year, sem))
         return
 
     if action == "res_year":
@@ -792,24 +777,13 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             link = COMING_SOON
 
         if link == COMING_SOON:
-            await send_clean_message(
-                update,
-                context,
-                COMING_SOON_TEXT,
-                reply_markup=result_keyboard(back_cb=f"year|{course_key}|{year}")
-            )
+            await send_clean_message(update, context, COMING_SOON_TEXT,
+                                     reply_markup=result_keyboard(back_cb=f"year|{course_key}|{year}"))
         else:
-            text = format_result(
-                [f"{course['icon']} {course['label']}", f"🔹 {year}"],
-                resource_type,
-                link
-            )
-            await send_clean_message(
-                update,
-                context,
-                text,
-                reply_markup=result_with_link_keyboard(link, back_cb=f"year|{course_key}|{year}")
-            )
+            year_icon = {"1st Year": "🟢", "2nd Year": "🔵", "3rd Year": "🟠", "4th Year": "🔴"}.get(year, "🔹")
+            text = format_result([f"{course['icon']} {course['label']}", f"{year_icon} {year}"], resource_type, link)
+            await send_clean_message(update, context, text,
+                                     reply_markup=result_with_link_keyboard(link, back_cb=f"year|{course_key}|{year}"))
         return
 
     if action == "res_sem":
@@ -826,50 +800,28 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             link = COMING_SOON
 
         if link == COMING_SOON:
-            await send_clean_message(
-                update,
-                context,
-                COMING_SOON_TEXT,
-                reply_markup=result_keyboard(back_cb=f"sem|{course_key}|{year}|{sem}")
-            )
+            await send_clean_message(update, context, COMING_SOON_TEXT,
+                                     reply_markup=result_keyboard(back_cb=f"sem|{course_key}|{year}|{sem}"))
         else:
-            text = format_result(
-                [f"{course['icon']} {course['label']}", f"🔹 {year}", f"📘 {sem}"],
-                resource_type,
-                link
-            )
-            await send_clean_message(
-                update,
-                context,
-                text,
-                reply_markup=result_with_link_keyboard(link, back_cb=f"sem|{course_key}|{year}|{sem}")
-            )
+            year_icon = {"1st Year": "🟢", "2nd Year": "🔵", "3rd Year": "🟠", "4th Year": "🔴"}.get(year, "🔹")
+            text = format_result([f"{course['icon']} {course['label']}", f"{year_icon} {year}", f"📘 {sem}"], resource_type, link)
+            await send_clean_message(update, context, text,
+                                     reply_markup=result_with_link_keyboard(link, back_cb=f"sem|{course_key}|{year}|{sem}"))
         return
 
     if action == "res_branch":
         year, sem, branch, resource_type = parts[1], parts[2], parts[3], parts[4]
         link = get_btech_branch_resource(year, sem, branch, resource_type)
         branch_label = branch_label_from_key(year, sem, branch)
+        year_icon = {"2nd Year": "🔵", "3rd Year": "🟠"}.get(year, "🔹")
 
         if link == COMING_SOON:
-            await send_clean_message(
-                update,
-                context,
-                COMING_SOON_TEXT,
-                reply_markup=result_keyboard(back_cb=f"branch|{year}|{sem}|{branch}")
-            )
+            await send_clean_message(update, context, COMING_SOON_TEXT,
+                                     reply_markup=result_keyboard(back_cb=f"branch|{year}|{sem}|{branch}"))
         else:
-            text = format_result(
-                ["🎓 B.Tech", f"🔹 {year}", f"📘 {sem}", f"🏷️ {branch_label}"],
-                resource_type,
-                link
-            )
-            await send_clean_message(
-                update,
-                context,
-                text,
-                reply_markup=result_with_link_keyboard(link, back_cb=f"branch|{year}|{sem}|{branch}")
-            )
+            text = format_result(["💻 B.Tech", f"{year_icon} {year}", f"📘 {sem}", f"🏷️ {branch_label}"], resource_type, link)
+            await send_clean_message(update, context, text,
+                                     reply_markup=result_with_link_keyboard(link, back_cb=f"branch|{year}|{sem}|{branch}"))
         return
 
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
